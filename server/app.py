@@ -59,7 +59,7 @@ def get_pizzas():
         pizzas = Pizza.query.all()
         return jsonify([pizza.serialize() for pizza in pizzas])
     except Exception as e:
-        return make_response(str(e), 500)
+        return make_response(jsonify({'error': str(e)}), 500)
 
 @app.route('/restaurant_pizzas', methods=['POST'])
 def create_restaurant_pizza():
@@ -75,6 +75,14 @@ def create_restaurant_pizza():
         if not restaurant_id or not pizza_id:
             return make_response(jsonify({'error': 'Missing restaurant_id or pizza_id'}), 400)
 
+        pizza = Pizza.query.get(pizza_id)
+        if not pizza:
+            return make_response(jsonify({'error': 'Pizza not found'}), 404)
+
+        restaurant = Restaurant.query.get(restaurant_id)
+        if not restaurant:
+            return make_response(jsonify({'error': 'Restaurant not found'}), 404)
+
         restaurant_pizza = RestaurantPizza(
             restaurant_id=restaurant_id,
             pizza_id=pizza_id,
@@ -87,6 +95,7 @@ def create_restaurant_pizza():
         return make_response(jsonify({'error': f'Missing field {str(ke)}'}), 400)
     except Exception as e:
         return make_response(jsonify({'error': str(e)}), 500)
+
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)
