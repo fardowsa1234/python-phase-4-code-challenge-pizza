@@ -53,5 +53,5 @@ class RestaurantPizza(db.Model):
             'id': self.id,
             'price': self.price,
             'restaurant_id': self.restaurant_id,
-            'pizza_id': self.pizza_id,
+            'pizza': self.pizza.serialize(),  # Include pizza details
         }
